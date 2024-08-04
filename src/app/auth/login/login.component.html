@@ -60,11 +60,11 @@
         <button class="button">Login</button>
     </div>
 
-    @if (emailInvalid) {
+    @if (emailIsInvalid) {
     <p class="control-error">Invalid email entered.</p>
-    } @if (passwordInvalid) {
+    } @if (passwordIsInvalid) {
     <p class="control-error">
-        Invalid password entered. Password must be 6-chatacters long.
+        Invalid password entered. Password must be 6-chatacters long and contain a question mark.
     </p>
     }
 </form>

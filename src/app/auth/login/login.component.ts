@@ -1,4 +1,3 @@
-import { NotExpr } from "@angular/compiler";
 import {
     afterNextRender,
     Component,
@@ -7,6 +6,7 @@ import {
     viewChild,
 } from "@angular/core";
 import {
+    AbstractControl,
     FormControl,
     FormGroup,
     FormsModule,
@@ -15,6 +15,14 @@ import {
     Validators,
 } from "@angular/forms";
 import { debounceTime, subscribeOn, Subscription } from "rxjs";
+
+function mustContainQuestionMark(control: AbstractControl) {
+    if (control.value.includes("?")) {
+        return null;
+    }
+
+    return { doesNotContainQuestionMark: true };
+}
 
 @Component({
     selector: "app-login",
@@ -71,11 +79,15 @@ export class LoginComponent {
             validators: [Validators.email, Validators.required],
         }),
         password: new FormControl("", {
-            validators: [Validators.required, Validators.minLength(6)],
+            validators: [
+                Validators.required,
+                Validators.minLength(6),
+                mustContainQuestionMark,
+            ],
         }),
     });
 
-    get emailInvalid() {
+    get emailIsInvalid() {
         return (
             this.form.controls.email.touched &&
             this.form.controls.email.dirty &&
@@ -83,7 +95,7 @@ export class LoginComponent {
         );
     }
 
-    get passwordInvalid() {
+    get passwordIsInvalid() {
         return (
             this.form.controls.password.touched &&
             this.form.controls.password.dirty &&
