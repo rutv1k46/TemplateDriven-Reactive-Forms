@@ -14,7 +14,7 @@ import {
     ReactiveFormsModule,
     Validators,
 } from "@angular/forms";
-import { debounceTime, subscribeOn, Subscription } from "rxjs";
+import { debounceTime, of, subscribeOn, Subscription } from "rxjs";
 
 function mustContainQuestionMark(control: AbstractControl) {
     if (control.value.includes("?")) {
@@ -22,6 +22,14 @@ function mustContainQuestionMark(control: AbstractControl) {
     }
 
     return { doesNotContainQuestionMark: true };
+}
+
+function emailIsUnique(control: AbstractControl){
+  if(control.value !== 'rutv1k46@gwu.edu'){
+    return of(null)
+  }
+
+  return of({notUnique: true})
 }
 
 @Component({
@@ -77,6 +85,7 @@ export class LoginComponent {
     form = new FormGroup({
         email: new FormControl("", {
             validators: [Validators.email, Validators.required],
+            asyncValidators: [emailIsUnique]
         }),
         password: new FormControl("", {
             validators: [
