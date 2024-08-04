@@ -25,6 +25,18 @@ function emailIsUnique(control: AbstractControl) {
     return of({ notUnique: true });
 }
 
+function equalValues(controlName1: string, controlName2: string){
+  return (control: AbstractControl) => {
+    const val1 = control.get(controlName1)?.value
+    const val2 = control.get(controlName2)?.value
+
+    if (val1 === val2){
+      return null
+    }
+    return {valuesNotEqual: true}
+  }
+}
+
 @Component({
     selector: "app-signup",
     standalone: true,
@@ -49,7 +61,7 @@ export class SignupComponent {
             confirmPassword: new FormControl("", {
                 validators: [Validators.required, Validators.minLength(6)],
             }),
-        }),
+        }, {validators: [equalValues('password', 'confirmPassword')]}),
         firstName: new FormControl("", { validators: [Validators.required] }),
         lastName: new FormControl("", { validators: [Validators.required] }),
         address: new FormGroup({
