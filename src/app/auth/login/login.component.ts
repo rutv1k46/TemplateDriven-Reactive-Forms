@@ -3,6 +3,7 @@ import {
     Component,
     DestroyRef,
     inject,
+    OnInit,
     viewChild,
 } from "@angular/core";
 import {
@@ -81,7 +82,8 @@ function emailIsUnique(control: AbstractControl){
 //         console.log(enteredEmail, enteredPassword);
 //     }
 // }
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  private destroyRef = inject(DestroyRef)
     form = new FormGroup({
         email: new FormControl("", {
             validators: [Validators.email, Validators.required],
@@ -110,6 +112,24 @@ export class LoginComponent {
             this.form.controls.password.dirty &&
             this.form.controls.password.invalid
         );
+    }
+
+    ngOnInit(){
+      const savedForm = window.localStorage.getItem('saved-login-form')
+
+      if(savedForm){
+        const loadedFormData = JSON.parse(savedForm)
+        const savedEmail = loadedFormData.email
+
+        this.form.controls.email.setValue(savedEmail)
+      }
+
+
+      const subscription = this.form.valueChanges.pipe(debounceTime(500)).subscribe({
+        next: value => {window.localStorage.setItem('saved-login-form', JSON.stringify({email: value.email}))}
+      })
+
+      this.destroyRef.onDestroy(() => subscription.unsubscribe())
     }
 
     onSubmit() {
